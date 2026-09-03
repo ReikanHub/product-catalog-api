@@ -7,6 +7,7 @@ import (
 
 	"product-catalog-api/internal/database"
 	"product-catalog-api/internal/handler"
+	"product-catalog-api/internal/middleware"
 	"product-catalog-api/internal/repository"
 	"product-catalog-api/internal/service"
 )
@@ -20,7 +21,10 @@ func main() {
 
 	productHandler := handler.NewProductHandler(productService)
 
-	router := gin.Default()
+	router := gin.New()
+
+	router.Use(middleware.Logger())
+	router.Use(middleware.Recovery())
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
