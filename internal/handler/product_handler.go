@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"product-catalog-api/internal/apperror"
 	"product-catalog-api/internal/model"
 	"product-catalog-api/internal/repository"
 	"product-catalog-api/internal/service"
@@ -78,7 +79,7 @@ func (h *ProductHandler) GetProductByID(c *gin.Context) {
 	product, err := h.service.GetProductByID(uint(id))
 
 	if err != nil {
-		if errors.Is(err, service.ErrProductNotFound) {
+		if errors.Is(err, apperror.ErrProductNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{
 				"error": "product not found",
 			})
@@ -123,7 +124,7 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 	updatedProduct, err := h.service.UpdateProduct(uint(id), &product)
 
 	if err != nil {
-		if errors.Is(err, service.ErrProductNotFound) {
+		if errors.Is(err, apperror.ErrProductNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{
 				"error": "product not found",
 			})
@@ -152,7 +153,7 @@ func (h *ProductHandler) DeleteProduct(c *gin.Context) {
 	err = h.service.DeleteProduct(uint(id))
 
 	if err != nil {
-		if errors.Is(err, service.ErrProductNotFound) {
+		if errors.Is(err, apperror.ErrProductNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{
 				"error": "product not found",
 			})
@@ -209,6 +210,13 @@ func (h *ProductHandler) GetProducts(c *gin.Context) {
 			return
 		}
 
+		if priceFrom < 0 {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "price_from cannot be negative",
+			})
+			return
+		}
+
 		filter.PriceFrom = &priceFrom
 	}
 
@@ -222,7 +230,23 @@ func (h *ProductHandler) GetProducts(c *gin.Context) {
 			return
 		}
 
+		if priceTo < 0 {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "price_to cannot be negative",
+			})
+			return
+		}
+
 		filter.PriceTo = &priceTo
+	}
+
+	if filter.PriceFrom != nil && filter.PriceTo != nil {
+		if *filter.PriceFrom > *filter.PriceTo {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "price_from cannot be greater than price_to",
+			})
+			return
+		}
 	}
 
 	products, err := h.service.GetProducts(filter)

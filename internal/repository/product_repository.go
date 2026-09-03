@@ -8,6 +8,14 @@ import (
 	"product-catalog-api/internal/model"
 )
 
+type ProductRepositoryInterface interface {
+	Create(product *model.Product) error
+	GetByID(id uint) (*model.Product, error)
+	Update(product *model.Product) error
+	Delete(id uint) error
+	GetAll(filter ProductFilter) ([]model.Product, error)
+}
+
 type ProductRepository struct {
 	db *gorm.DB
 }
