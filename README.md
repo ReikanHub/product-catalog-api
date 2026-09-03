@@ -96,6 +96,47 @@ http://localhost:8080
 
 База данных SQLite создаётся автоматически при запуске приложения.
 
+## Запуск через Docker
+
+Для запуска приложения с помощью Docker:
+
+```bash
+docker compose up --build
+```
+
+После запуска API будет доступен по адресу:
+
+```text
+http://localhost:8080
+```
+
+Для запуска в фоновом режиме:
+
+```bash
+docker compose up -d --build
+```
+
+Для просмотра логов:
+
+```bash
+docker compose logs -f
+```
+
+Для остановки контейнера:
+
+```bash
+docker compose down
+```
+
+SQLite база данных сохраняется в папке:
+
+```text
+data/
+```
+
+и не удаляется при остановке контейнера.
+
+
 ## Health Check
 
 ```http

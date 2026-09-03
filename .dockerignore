@@ -1,0 +1,13 @@
+.git
+.gitignore
+
+products.db
+
+tmp
+bin
+
+.vscode
+
+README.md
+
+*.log

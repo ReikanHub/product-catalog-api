@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: product-catalog-api
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./data:/app/data
+
+    restart: unless-stopped
